@@ -1,0 +1,78 @@
+{
+  "analysis": {
+    "cpu": {
+      "status": "error",
+      "message": "Could not collect CPU data"
+    },
+    "memory": {
+      "status": "good",
+      "total_pss_mb": 0.0,
+      "native_heap_mb": 0.0,
+      "dalvik_heap_mb": 0.0,
+      "graphics_mb": 0.0,
+      "insights": []
+    },
+    "frames": {
+      "status": "good",
+      "total_frames": 0,
+      "janky_frames": 0,
+      "jank_percentage": 0,
+      "smooth_percentage": 100,
+      "percentiles": {
+        "p50": 0,
+        "p90": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "insights": []
+    },
+    "startup": {
+      "status": "warning",
+      "type": "cold",
+      "average_ms": 1853,
+      "min_ms": 627,
+      "max_ms": 4262,
+      "measurements": [
+        {
+          "total_time_ms": 4262,
+          "wait_time_ms": 4298
+        },
+        {
+          "total_time_ms": 627,
+          "wait_time_ms": 633
+        },
+        {
+          "total_time_ms": 669,
+          "wait_time_ms": 671
+        }
+      ],
+      "insights": [
+        "High startup time variance detected"
+      ]
+    },
+    "overall_score": 90
+  },
+  "recommendations": [
+    {
+      "category": "Startup",
+      "priority": "medium",
+      "title": "Optimize App Startup",
+      "suggestions": [
+        "Defer non-critical initialization",
+        "Use lazy initialization for heavy components",
+        "Optimize Application class onCreate()",
+        "Consider using App Startup library"
+      ]
+    }
+  ],
+  "summary": {
+    "overall_score": 90,
+    "status": "excellent",
+    "key_findings": [
+      "High startup time variance detected"
+    ],
+    "critical_issues": 0,
+    "total_recommendations": 1
+  },
+  "timestamp": "2025-05-22T17:19:05.150564"
+}

@@ -1,0 +1,72 @@
+{
+  "package_name": "com.ecgmobile",
+  "timestamp": "2025-05-22T17:18:32.006441",
+  "device_info": {
+    "manufacturer": "Google",
+    "model": "sdk_gphone64_arm64",
+    "android_version": "16",
+    "sdk_version": "36",
+    "screen_density": "420",
+    "screen_size": "1080x2424"
+  },
+  "metrics": {
+    "cpu": {
+      "error": "Could not collect CPU data",
+      "samples": []
+    },
+    "memory": {
+      "pss": {},
+      "private_dirty": {},
+      "heap": {},
+      "graphics": 0,
+      "total_pss": 0
+    },
+    "frames": {
+      "total_frames": 0,
+      "janky_frames": 0,
+      "percentile_50ms": 0,
+      "percentile_90ms": 0,
+      "percentile_95ms": 0,
+      "percentile_99ms": 0,
+      "vsync_count": 0,
+      "input_event_count": 0,
+      "slow_ui_thread": 0,
+      "slow_bitmap_uploads": 0,
+      "slow_draw_commands": 0,
+      "jank_percentage": 0,
+      "smooth_percentage": 100
+    },
+    "startup": {
+      "type": "cold",
+      "measurements": [
+        {
+          "total_time_ms": 4262,
+          "wait_time_ms": 4298
+        },
+        {
+          "total_time_ms": 627,
+          "wait_time_ms": 633
+        },
+        {
+          "total_time_ms": 669,
+          "wait_time_ms": 671
+        }
+      ],
+      "average_total_time_ms": 1853,
+      "min_total_time_ms": 627,
+      "max_total_time_ms": 4262
+    }
+  },
+  "config": {
+    "cpu": true,
+    "memory": true,
+    "frames": true,
+    "startup": true,
+    "battery": false,
+    "network": false,
+    "screenshot": false,
+    "cpu_duration": 5,
+    "frame_duration": 5,
+    "cold_start": true
+  }
+}
