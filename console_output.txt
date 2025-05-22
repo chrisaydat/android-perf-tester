@@ -1,0 +1,42 @@
+✓ ADB connection verified
+✓ ADB connection verified
+
+============================================================
+🚀 Android Performance Tester
+📱 Package: com.ecgmobile
+🕐 Started: 2025-05-22 17:18:32
+============================================================
+
+📱 Device: Google sdk_gphone64_arm64
+🤖 Android: 16 (SDK 36)
+
+📊 Collecting CPU usage for 5 seconds...
+🧠 Collecting memory information...
+🎞️  Collecting frame rendering statistics for 5 seconds...
+  Recording frame data...
+⏱️  Measuring cold startup time...
+  Measurement 1: 4262ms
+  Measurement 2: 627ms
+  Measurement 3: 669ms
+
+📊 Results saved:
+  - Raw data: results/com.ecgmobile_raw_20250522_171905.json
+  - Analysis: results/com.ecgmobile_analysis_20250522_171905.json
+
+============================================================
+📊 PERFORMANCE SUMMARY
+============================================================
+
+🌟 Overall Score: 90/100 (Excellent)
+
+📈 Metrics Summary:
+  ✅ Memory (PSS): 0.0MB
+  ✅ UI Smoothness: 100.0% smooth frames
+  ⚠️ Startup Time: 1853ms
+
+🔍 Key Findings:
+  • High startup time variance detected
+
+💡 Top Recommendations:
+
+============================================================ 

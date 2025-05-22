@@ -172,7 +172,7 @@ class PerformanceCollector:
             "metrics": {}
         }
     
-    def collect_cpu_usage(self, duration: int = 5) -> Dict:
+    def collect_cpu_usage(self, duration: int = 9) -> Dict:
         """Collect CPU usage over specified duration"""
         print(f"Collecting CPU usage for {duration} seconds...")
         cpu_samples = []
