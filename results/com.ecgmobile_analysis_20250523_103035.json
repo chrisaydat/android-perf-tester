@@ -1,0 +1,92 @@
+{
+  "analysis": {
+    "cpu": {
+      "status": "good",
+      "average": 0.0,
+      "max": 0.0,
+      "min": 0.0,
+      "std_dev": 0.0,
+      "samples": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "insights": []
+    },
+    "memory": {
+      "status": "warning",
+      "total_pss_mb": 194.96,
+      "native_heap_mb": 38.28,
+      "dalvik_heap_mb": 3.82,
+      "graphics_mb": 0.0,
+      "insights": []
+    },
+    "frames": {
+      "status": "good",
+      "total_frames": 0,
+      "janky_frames": 0,
+      "jank_percentage": 0,
+      "smooth_percentage": 100,
+      "percentiles": {
+        "p50": 4950,
+        "p90": 4950,
+        "p95": 4950,
+        "p99": 4950
+      },
+      "insights": [
+        "Slow frame rendering: 90th percentile at 4950ms"
+      ]
+    },
+    "startup": {
+      "status": "good",
+      "type": "cold",
+      "average_ms": 927,
+      "min_ms": 497,
+      "max_ms": 1330,
+      "measurements": [
+        {
+          "total_time_ms": 1330,
+          "wait_time_ms": 1350
+        },
+        {
+          "total_time_ms": 497,
+          "wait_time_ms": 500
+        },
+        {
+          "total_time_ms": 953,
+          "wait_time_ms": 954
+        }
+      ],
+      "insights": [
+        "High startup time variance detected"
+      ]
+    },
+    "overall_score": 87
+  },
+  "recommendations": [
+    {
+      "category": "Memory",
+      "priority": "medium",
+      "title": "Reduce Memory Footprint",
+      "suggestions": [
+        "Check for memory leaks using LeakCanary",
+        "Optimize bitmap and image handling",
+        "Implement proper lifecycle management",
+        "Use memory-efficient data structures"
+      ]
+    }
+  ],
+  "summary": {
+    "overall_score": 87,
+    "status": "excellent",
+    "key_findings": [
+      "Slow frame rendering: 90th percentile at 4950ms",
+      "High startup time variance detected"
+    ],
+    "critical_issues": 0,
+    "total_recommendations": 1
+  },
+  "timestamp": "2025-05-23T10:30:35.051686"
+}
