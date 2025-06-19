@@ -27,7 +27,7 @@ An open-source performance testing tool for Android/Flutter apps using ADB comma
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/android-perf-tester.git
+git clone https://github.com/chrisaydat/android-perf-tester.git
 cd android-perf-tester
 ```
 
