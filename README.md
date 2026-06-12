@@ -1,6 +1,35 @@
 # Android Performance Tester 🚀
 
-An open-source performance testing tool for Android/Flutter apps using ADB commands. Generate comprehensive performance reports with actionable insights.
+![Python](https://img.shields.io/badge/python-3.8+-blue)
+![License](https://img.shields.io/badge/license-Apache%202.0-green)
+![Status](https://img.shields.io/badge/status-active-success)
+![Contributions](https://img.shields.io/badge/contributions-welcome-orange)
+
+# Android Performance Tester
+
+An open-source performance testing toolkit for Android and Flutter applications.
+
+Android Performance Tester helps QA engineers and mobile developers measure CPU usage, memory consumption, startup performance, UI rendering smoothness, battery usage, and network activity using Android Debug Bridge (ADB).
+
+Built to support local testing, performance benchmarking, and CI/CD integration.
+
+## Vision
+
+Mobile teams frequently catch functional defects while performance regressions go unnoticed until late in the release cycle.
+
+Android Performance Tester aims to make performance testing as easy and repeatable as functional testing.
+
+## Maintainers
+
+A community-driven project maintained by QA and Mobile Engineering professionals.
+
+Contributions are welcome from:
+
+- QA Engineers
+- Test Automation Engineers
+- Android Developers
+- Flutter Developers
+- Performance Engineers
 
 ## Features ✨
 
@@ -208,6 +237,18 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 Made with ❤️ for Android developers who care about performance
+
+# Contributing
+
+We welcome contributions of all sizes.
+
+Ways to contribute:
+
+- Bug reports
+- Feature requests
+- Documentation improvements
+- Performance metric enhancements
+- New report formats
 
 # Test a specific package
 python android_perf_tester.py com.example.myapp
