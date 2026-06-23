@@ -1,225 +1,400 @@
-# Android Performance Tester 🚀
+# Android Perf Tester v2
 
-An open-source performance testing tool for Android/Flutter apps using ADB commands. Generate comprehensive performance reports with actionable insights.
+A CI-ready Android performance testing tool for QA engineers.
 
-## Features ✨
+Android Perf Tester uses ADB to collect CPU, memory, frame rendering, startup, battery, and network signals, then turns them into threshold results, regression comparisons, exit codes, JSON artifacts, and HTML reports that work locally and in CI/CD.
 
-- **CPU Usage Monitoring** - Track CPU usage patterns over time
-- **Memory Analysis** - Monitor PSS, heap usage, and potential memory leaks  
-- **UI Performance** - Measure frame rendering, jank rate, and UI smoothness
-- **Startup Time** - Measure cold and warm app startup times
-- **Battery Usage** - Track battery consumption (optional)
-- **Network Stats** - Monitor network usage (optional)
-- **Device Info** - Automatically capture device specifications
-- **Performance Score** - Get an overall performance score (0-100)
-- **Actionable Recommendations** - Receive specific optimization suggestions
+## What It Is For
 
-## Prerequisites 📋
+- Pre-merge performance smoke checks
+- Nightly performance suites
+- Release-candidate validation
+- Regression detection between builds
+- Shareable QA evidence for developers and release owners
 
-1. **Python 3.6+** installed
-2. **Android SDK Platform Tools** (for ADB)
-   - Download from: https://developer.android.com/studio/releases/platform-tools
-   - Add to PATH environment variable
-3. **USB Debugging** enabled on your Android device
-4. Device connected via USB or running emulator
+The main CI contract is:
 
-## Installation 🛠️
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/chrisaydat/android-perf-tester.git
-cd android-perf-tester
+python main.py run com.example.app \
+  --scenario checkout \
+  --threshold-config perf.thresholds.json \
+  --baseline results/baseline.json \
+  --output results/perf \
+  --fail-on threshold,regression \
+  --ci
 ```
 
-2. Install dependencies (optional - tool works without them):
+## Prerequisites
+
+1. Python 3.8+
+2. Android SDK Platform Tools
+3. `adb` available on your `PATH`
+4. A connected Android device or running emulator
+5. USB debugging enabled for physical devices
+
+Install optional dependencies:
+
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-## Quick Start 🏃‍♂️
+The core CLI works with the Python standard library. Optional packages improve future reporting and terminal output.
 
-### Basic Usage
+## Quick Start
+
+Check the environment:
 
 ```bash
-# Test a specific app
-python main.py com.example.yourapp
-
-# Test the currently active app
-python main.py --current
-
-# List all installed packages
-python main.py --list
+python main.py doctor
+python main.py doctor com.example.app
 ```
 
-### Test Profiles
+Run one scenario:
 
 ```bash
-# Quick test (CPU & Memory only)
+python main.py run com.example.app --scenario login-smoke
+```
+
+Run a quick local test:
+
+```bash
+python main.py run com.example.app --quick
+```
+
+Run the currently focused app:
+
+```bash
+python main.py run --current --ui-focus
+```
+
+Generate an HTML report from an existing analysis file:
+
+```bash
+python main.py report \
+  --input results/com.example.app_checkout_analysis_20260515_093000.json \
+  --output results/report
+```
+
+## Commands
+
+| Command | Purpose |
+|---|---|
+| `doctor` | Validate ADB, device, package, launch activity, and metric readiness |
+| `run` | Run one performance scenario |
+| `suite` | Run multiple scenarios from a JSON suite file |
+| `compare` | Compare current analysis JSON against a baseline |
+| `report` | Generate an HTML report from analysis JSON |
+
+Legacy commands still work:
+
+```bash
 python main.py com.example.app --quick
-
-# Full test (all metrics including battery & network)
 python main.py com.example.app --full
-
-# UI-focused test (frames, startup, memory)
-python main.py com.example.app --ui-focus
+python main.py --list
+python main.py --compare results/baseline.json results/current.json
 ```
 
-### Custom Configuration
+## Scenario Suite Config
 
-Create a `config.json` file:
+Create `perf.suite.json`:
 
 ```json
 {
-  "cpu": true,
-  "memory": true,
-  "frames": true,
-  "startup": true,
-  "battery": false,
-  "network": false,
-  "screenshot": true,
-  "cpu_duration": 10,
-  "frame_duration": 10,
-  "cold_start": true
+  "app": "com.example.app",
+  "output": "results/perf",
+  "scenarios": [
+    {
+      "name": "checkout",
+      "metrics": ["cpu", "memory", "frames", "startup"],
+      "cpu_duration": 30,
+      "frame_duration": 30,
+      "cold_start": true
+    },
+    {
+      "name": "home-scroll",
+      "metrics": ["cpu", "memory", "frames"],
+      "cpu_duration": 60,
+      "frame_duration": 60
+    }
+  ]
 }
 ```
 
-Then run:
+Run it:
+
 ```bash
-python main.py com.example.app --config config.json
+python main.py suite \
+  --config perf.suite.json \
+  --threshold-config perf.thresholds.json \
+  --fail-on threshold,regression
 ```
 
-## Output 📊
+## Thresholds
 
-The tool generates:
+Use `--threshold-config` for repeatable QA gates:
 
-1. **Raw data file** - Complete measurement data in JSON format
-2. **Analysis file** - Processed metrics with insights and recommendations
-3. **Console summary** - Quick overview with emoji indicators
-
-Example output structure:
+```json
+{
+  "defaults": {
+    "failOnMissingMetric": true,
+    "regressionTolerancePercent": 10
+  },
+  "scenarios": {
+    "checkout": {
+      "cpu.average": { "warn": 35, "fail": 45 },
+      "cpu.max": { "warn": 70, "fail": 85 },
+      "memory.total_pss_mb": { "warn": 400, "fail": 500 },
+      "frames.jank_percentage": { "warn": 3, "fail": 5 },
+      "frames.percentiles.p95": { "warn": 24, "fail": 32 },
+      "startup.average_ms": { "warn": 1500, "fail": 1800 }
+    }
+  }
+}
 ```
+
+Run with thresholds:
+
+```bash
+python main.py run com.example.app \
+  --scenario checkout \
+  --threshold-config perf.thresholds.json \
+  --fail-on threshold \
+  --ci
+```
+
+Use inline one-off thresholds:
+
+```bash
+python main.py run com.example.app \
+  --fail-if "cpu.average > 45" \
+  --fail-if "frames.jank_percentage > 5" \
+  --fail-on threshold
+```
+
+Supported MVP threshold fields:
+
+| Metric path | Meaning |
+|---|---|
+| `cpu.average` | Average app CPU percentage |
+| `cpu.max` | Maximum app CPU percentage |
+| `memory.total_pss_mb` | Total PSS memory in MB |
+| `frames.jank_percentage` | Janky frame percentage |
+| `frames.percentiles.p95` | 95th percentile frame time in ms |
+| `startup.average_ms` | Average startup time in ms |
+
+## Regression Detection
+
+Compare current results with a baseline:
+
+```bash
+python main.py compare \
+  --current results/current_analysis.json \
+  --baseline results/baseline_analysis.json \
+  --tolerance-percent 10 \
+  --fail-on regression
+```
+
+Use regression checks during a run:
+
+```bash
+python main.py run com.example.app \
+  --scenario checkout \
+  --baseline results/baseline_analysis.json \
+  --threshold-config perf.thresholds.json \
+  --fail-on threshold,regression \
+  --ci
+```
+
+Regression logic treats CPU, memory, startup, jank, and frame time as lower-is-better. A metric fails when the current value is worse than baseline by more than the configured tolerance.
+
+## CI/CD Usage
+
+### GitHub Actions
+
+```yaml
+name: Android performance
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run performance gate
+        run: |
+          python main.py run com.example.app \
+            --scenario checkout \
+            --threshold-config perf.thresholds.json \
+            --baseline results/baseline_analysis.json \
+            --output results/perf \
+            --fail-on threshold,regression \
+            --ci
+
+      - name: Upload performance artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-performance-report
+          path: results/perf
+```
+
+### Jenkins
+
+```groovy
+pipeline {
+  agent any
+
+  stages {
+    stage('Android Performance') {
+      steps {
+        sh '''
+          python main.py suite \
+            --config perf.suite.json \
+            --threshold-config perf.thresholds.json \
+            --baseline results/baseline_analysis.json \
+            --output results/perf \
+            --fail-on threshold,regression
+        '''
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'results/perf/**', allowEmptyArchive: true
+          publishHTML target: [
+            reportDir: 'results/perf',
+            reportFiles: '**/index.html',
+            reportName: 'Android Performance Report'
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+## Exit Codes
+
+| Code | Meaning |
+|---:|---|
+| `0` | Passed |
+| `1` | Completed with warnings |
+| `2` | Threshold or missing-metric failure |
+| `3` | Regression failure |
+| `10` | Device/setup failure |
+| `11` | App launch failure |
+| `12` | Metric collection failure |
+| `20` | Invalid config or CLI usage |
+
+If both threshold and regression failures happen, threshold failure exits first with code `2`.
+
+## Output Artifacts
+
+Each `run` writes:
+
+```text
 results/
-├── com.example.app_raw_20240115_143022.json
-├── com.example.app_analysis_20240115_143022.json
-└── screenshot_com.example.app_test_complete_20240115_143022.png
+├── com.example.app_checkout_raw_20260515_093000.json
+├── com.example.app_checkout_analysis_20260515_093000.json
+└── com.example.app_checkout_report_20260515_093000/
+    ├── index.html
+    └── assets/
+        ├── styles.css
+        └── charts.js
 ```
 
-## Understanding the Results 📈
+How to read the report:
 
-### Performance Score (0-100)
-- **80-100**: Excellent 🌟
-- **60-79**: Good ✅
-- **40-59**: Needs Improvement ⚠️
-- **0-39**: Poor ❌
+| Status | Meaning |
+|---|---|
+| `PASS` | Metric is inside target |
+| `WARN` | Metric should be reviewed but does not block unless your process treats warnings as blockers |
+| `FAIL` | Metric exceeded a configured gate |
+| `MISSING` | Metric was not available or was not collected |
 
-### Key Metrics
+## Local Debugging Workflow
 
-1. **CPU Usage**
-   - Good: < 30% average
-   - Warning: 30-60%
-   - Critical: > 60%
+1. Check setup:
 
-2. **Memory (PSS)**
-   - Good: < 100MB
-   - Warning: 100-200MB
-   - Critical: > 200MB
-
-3. **UI Jank Rate**
-   - Good: < 5% janky frames
-   - Warning: 5-10%
-   - Critical: > 10%
-
-4. **Startup Time**
-   - Good: < 1 second
-   - Warning: 1-2 seconds
-   - Critical: > 2 seconds
-
-## Advanced Features 🔧
-
-### Compare Results
 ```bash
-# Compare multiple test results
-python main.py --compare results/test1.json results/test2.json
+python main.py doctor com.example.app
 ```
 
-### Performance History
+2. Run a focused test:
+
 ```bash
-# Show performance trends
-python main.py com.example.app --history
+python main.py run com.example.app --ui-focus --scenario home-scroll
 ```
 
-### Custom Test Duration
+3. Compare against a known good run:
+
 ```bash
-# Longer CPU monitoring (20 seconds)
-python main.py com.example.app --cpu-duration 20
-
-# Extended frame analysis (15 seconds)
-python main.py com.example.app --frame-duration 15
+python main.py compare \
+  --current results/current_analysis.json \
+  --baseline results/good_analysis.json
 ```
 
-## Project Structure 📁
+4. Open the generated `index.html` report from the output directory.
 
+## Troubleshooting
+
+### ADB not found
+
+Install Android SDK Platform Tools and add them to `PATH`:
+
+```bash
+export PATH="$PATH:/path/to/platform-tools"
 ```
-android-perf-tester/
-├── adb_commands.py       # ADB wrapper module
-├── data_collector.py     # Performance data collection
-├── data_processor.py     # Data analysis and insights
-├── main.py              # Main entry point
-├── requirements.txt     # Optional dependencies
-├── README.md           # This file
-└── results/            # Output directory (auto-created)
+
+### No device connected
+
+```bash
+adb devices
+adb kill-server
+adb start-server
+adb devices
 ```
 
-## Next Steps 🎯
+For physical devices, confirm USB debugging and the device trust prompt.
 
-1. **HTML Report Generator** - Coming soon!
-2. **Continuous Monitoring** - Run tests periodically
-3. **CI/CD Integration** - Automate performance testing
-4. **Custom Metrics** - Add your own measurements
+### Package not installed
 
-## Troubleshooting 🔍
+```bash
+adb shell pm list packages | grep example
+```
 
-### "ADB not found"
-- Install Android SDK Platform Tools
-- Add to PATH: `export PATH=$PATH:/path/to/platform-tools`
+Install the APK or correct the package name.
 
-### "No device connected"
-- Enable USB debugging on device
-- Check connection: `adb devices`
-- Restart ADB: `adb kill-server && adb start-server`
+### App launch failure
 
-### "Package not found"
-- Verify package name: `adb shell pm list packages | grep yourapp`
-- Ensure app is installed
+Run:
 
-## Contributing 🤝
+```bash
+python main.py doctor com.example.app
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+If the launch activity cannot be resolved, check the app manifest and package name.
 
-## License 📄
+### Missing metrics
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Missing metrics usually mean the scenario skipped that metric, the app did not render frames during the capture window, or ADB returned an unexpected `dumpsys` format. Use `--full` once to confirm the collector can read every metric.
 
-## Acknowledgments 🙏
+### Flaky emulator/device behavior
 
-- Android Debug Bridge (ADB) for making this possible
-- The Android development community for performance best practices
+Use a stable emulator image, keep only one target device connected for CI, reset app state before scenarios, and archive raw JSON plus HTML reports for failed runs.
 
----
+## Development
 
-Made with ❤️ for Android developers who care about performance
+Run tests with the standard library test runner:
 
-# Test a specific package
-python android_perf_tester.py com.example.myapp
+```bash
+python -m unittest discover -s tests -v
+```
 
-# Test the currently active app
-python android_perf_tester.py
+Compile-check the CLI:
 
-# List all installed packages
-python android_perf_tester.py --list-packages
-
-# Skip startup time measurement
-python android_perf_tester.py com.example.myapp --no-startup
-
-# Specify output directory
-python android_perf_tester.py com.example.myapp --output my_results
+```bash
+python -m py_compile main.py src/*.py
+```

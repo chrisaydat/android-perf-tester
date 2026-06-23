@@ -1,0 +1,27 @@
+.DS_Store
+.claude/
+.playwright-mcp/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Build and reports
+build/
+dist/
+htmlcov/
+coverage/
+reports/
+
+# Secrets and local config
+.env
+.env.*
+*.pem
+*.jks
+*.keystore
+key.properties
