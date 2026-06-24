@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ package_name }} - Android Performance Report</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Android Performance Report</h1>
+                <div class="app-info">
+                    <h2>{{ package_name }}</h2>
+                    <p class="timestamp">Generated: {{ timestamp }}</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="summary-section">
+            <div class="score-container">
+                <div class="score-circle {{ summary.status }}">
+                    <span class="score-value">{{ summary.overall_score }}</span>
+                    <span class="score-label">Score</span>
+                </div>
+                <div class="score-details">
+                    <h3>{{ summary.status|title }} Performance</h3>
+                    <p>{{ summary.critical_issues }} critical issues found</p>
+                    <p>{{ summary.total_recommendations }} recommendations</p>
+                </div>
+            </div>
+            
+            <div class="key-findings">
+                <h3>Key Findings</h3>
+                <ul>
+                    {% for finding in summary.key_findings %}
+                    <li>{{ finding }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+
+        <section class="metrics-section">
+            <h2>Performance Metrics</h2>
+            
+            <div class="metrics-grid">
+                <!-- CPU Metrics -->
+                <div class="metric-card">
+                    <h3>CPU Usage</h3>
+                    {% if analysis.cpu.status == "error" %}
+                    <div class="error-message">{{ analysis.cpu.message }}</div>
+                    {% else %}
+                    <div class="metric-value">{{ analysis.cpu.average }}%</div>
+                    <div class="metric-chart-container">
+                        <canvas id="cpuChart"></canvas>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Memory Metrics -->
+                <div class="metric-card">
+                    <h3>Memory Usage</h3>
+                    {% if analysis.memory.status == "error" %}
+                    <div class="error-message">{{ analysis.memory.message }}</div>
+                    {% else %}
+                    <div class="metric-value">{{ analysis.memory.total_pss_mb }} MB</div>
+                    <div class="memory-breakdown">
+                        <div class="memory-item">
+                            <span class="memory-label">Native Heap:</span>
+                            <span class="memory-value">{{ analysis.memory.native_heap_mb }} MB</span>
+                        </div>
+                        <div class="memory-item">
+                            <span class="memory-label">Dalvik Heap:</span>
+                            <span class="memory-value">{{ analysis.memory.dalvik_heap_mb }} MB</span>
+                        </div>
+                        <div class="memory-item">
+                            <span class="memory-label">Graphics:</span>
+                            <span class="memory-value">{{ analysis.memory.graphics_mb }} MB</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Frame Metrics -->
+                <div class="metric-card">
+                    <h3>UI Smoothness</h3>
+                    {% if analysis.frames.status == "error" %}
+                    <div class="error-message">{{ analysis.frames.message }}</div>
+                    {% else %}
+                    <div class="metric-value">{{ analysis.frames.smooth_percentage }}% <span class="metric-label">smooth frames</span></div>
+                    <div class="frames-details">
+                        <div class="frames-item">
+                            <span class="frames-label">Total Frames:</span>
+                            <span class="frames-value">{{ analysis.frames.total_frames }}</span>
+                        </div>
+                        <div class="frames-item">
+                            <span class="frames-label">Janky Frames:</span>
+                            <span class="frames-value">{{ analysis.frames.janky_frames }}</span>
+                        </div>
+                    </div>
+                    <div class="percentiles">
+                        <h4>Frame Rendering Time (ms)</h4>
+                        <div class="percentile-bars">
+                            <div class="percentile-item">
+                                <span class="percentile-label">P50:</span>
+                                <div class="percentile-bar p50-bar" data-value="{{ analysis.frames.percentiles.p50|default(0) }}"></div>
+                                <span class="percentile-value">{{ analysis.frames.percentiles.p50 }}ms</span>
+                            </div>
+                            <div class="percentile-item">
+                                <span class="percentile-label">P90:</span>
+                                <div class="percentile-bar p90-bar" data-value="{{ analysis.frames.percentiles.p90|default(0) }}"></div>
+                                <span class="percentile-value">{{ analysis.frames.percentiles.p90 }}ms</span>
+                            </div>
+                            <div class="percentile-item">
+                                <span class="percentile-label">P95:</span>
+                                <div class="percentile-bar p95-bar" data-value="{{ analysis.frames.percentiles.p95|default(0) }}"></div>
+                                <span class="percentile-value">{{ analysis.frames.percentiles.p95 }}ms</span>
+                            </div>
+                            <div class="percentile-item">
+                                <span class="percentile-label">P99:</span>
+                                <div class="percentile-bar p99-bar" data-value="{{ analysis.frames.percentiles.p99|default(0) }}"></div>
+                                <span class="percentile-value">{{ analysis.frames.percentiles.p99 }}ms</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Startup Metrics -->
+                <div class="metric-card">
+                    <h3>Startup Time</h3>
+                    {% if analysis.startup.status == "error" %}
+                    <div class="error-message">{{ analysis.startup.message }}</div>
+                    {% else %}
+                    <div class="metric-value">{{ analysis.startup.average_ms }} <span class="metric-label">ms</span></div>
+                    <div class="startup-details">
+                        <div class="startup-type">{{ analysis.startup.type|title }} Start</div>
+                        <div class="startup-item">
+                            <span class="startup-label">Min:</span>
+                            <span class="startup-value">{{ analysis.startup.min_ms }} ms</span>
+                        </div>
+                        <div class="startup-item">
+                            <span class="startup-label">Max:</span>
+                            <span class="startup-value">{{ analysis.startup.max_ms }} ms</span>
+                        </div>
+                    </div>
+                    <div class="metric-chart-container">
+                        <canvas id="startupChart"></canvas>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <section class="recommendations-section">
+            <h2>Recommendations</h2>
+            {% if recommendations %}
+            <div class="recommendations-list">
+                {% for rec in recommendations %}
+                <div class="recommendation-card priority-{{ rec.priority }}">
+                    <div class="recommendation-header">
+                        <h3>{{ rec.title }}</h3>
+                        <span class="recommendation-category">{{ rec.category }}</span>
+                    </div>
+                    <ul class="suggestion-list">
+                        {% for suggestion in rec.suggestions %}
+                        <li>{{ suggestion }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-recommendations">No recommendations available.</p>
+            {% endif %}
+        </section>
+
+        <section class="device-section">
+            <h2>Device Information</h2>
+            <div class="device-info">
+                <div class="device-item">
+                    <span class="device-label">Manufacturer:</span>
+                    <span class="device-value">{{ device_info.manufacturer }}</span>
+                </div>
+                <div class="device-item">
+                    <span class="device-label">Model:</span>
+                    <span class="device-value">{{ device_info.model }}</span>
+                </div>
+                <div class="device-item">
+                    <span class="device-label">Android Version:</span>
+                    <span class="device-value">{{ device_info.android_version }} (SDK {{ device_info.sdk_version }})</span>
+                </div>
+                <div class="device-item">
+                    <span class="device-label">Screen:</span>
+                    <span class="device-value">{{ device_info.screen_size }} ({{ device_info.screen_density }} dpi)</span>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Generated with Android Performance Tester</p>
+            <p class="timestamp">{{ timestamp }}</p>
+        </footer>
+    </div>
+
+    <script src="assets/charts.js"></script>
+    <script>
+        // Data for charts
+        const cpuData = JSON.parse('{{ cpu_data|tojson|safe if cpu_data else "[]" }}');
+        const startupData = JSON.parse('{{ startup_data|tojson|safe if startup_data else "[]" }}');
+        
+        // Initialize charts if data is available
+        document.addEventListener('DOMContentLoaded', function() {
+            if (cpuData.length > 0) {
+                initCpuChart('cpuChart', cpuData);
+            }
+            if (startupData.length > 0) {
+                initStartupChart('startupChart', startupData);
+            }
+            
+            // Set percentile bar widths
+            document.querySelectorAll('.percentile-bar').forEach(function(bar) {
+                const value = parseFloat(bar.getAttribute('data-value') || 0);
+                bar.style.width = (value * 100 / 16) + '%';
+            });
+        });
+    </script>
+</body>
+</html>

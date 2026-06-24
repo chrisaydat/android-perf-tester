@@ -1,0 +1,100 @@
+{
+  "package_name": "com.ecgmobile",
+  "timestamp": "2025-05-23T10:30:11.907577",
+  "device_info": {
+    "manufacturer": "Google",
+    "model": "sdk_gphone64_arm64",
+    "android_version": "16",
+    "sdk_version": "36",
+    "screen_density": "420",
+    "screen_size": "1080x2424"
+  },
+  "metrics": {
+    "cpu": {
+      "samples": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "timestamps": [
+        1747996211.90759,
+        1747996212.974876,
+        1747996214.014393,
+        1747996215.049726,
+        1747996216.0860212
+      ],
+      "average": 0.0,
+      "max": 0.0,
+      "min": 0.0,
+      "std_dev": 0.0,
+      "duration": 5,
+      "sample_count": 5
+    },
+    "memory": {
+      "pss": {},
+      "private_dirty": {},
+      "heap": {
+        "native_pss": 39198,
+        "native_private_dirty": 39120,
+        "native_heap_alloc": 48,
+        "native_heap_free": 39984,
+        "dalvik_pss": 3908,
+        "dalvik_private_dirty": 3720,
+        "dalvik_heap_alloc": 137,
+        "dalvik_heap_free": 4576
+      },
+      "graphics": 0,
+      "total_pss": 199638,
+      "total_heap_alloc": 185
+    },
+    "frames": {
+      "total_frames": 0,
+      "janky_frames": 0,
+      "percentile_50ms": 4950,
+      "percentile_90ms": 4950,
+      "percentile_95ms": 4950,
+      "percentile_99ms": 4950,
+      "vsync_count": 0,
+      "input_event_count": 0,
+      "slow_ui_thread": 0,
+      "slow_bitmap_uploads": 0,
+      "slow_draw_commands": 0,
+      "jank_percentage": 0,
+      "smooth_percentage": 100
+    },
+    "startup": {
+      "type": "cold",
+      "measurements": [
+        {
+          "total_time_ms": 1330,
+          "wait_time_ms": 1350
+        },
+        {
+          "total_time_ms": 497,
+          "wait_time_ms": 500
+        },
+        {
+          "total_time_ms": 953,
+          "wait_time_ms": 954
+        }
+      ],
+      "average_total_time_ms": 927,
+      "min_total_time_ms": 497,
+      "max_total_time_ms": 1330
+    }
+  },
+  "config": {
+    "cpu": true,
+    "memory": true,
+    "frames": true,
+    "startup": true,
+    "battery": false,
+    "network": false,
+    "screenshot": false,
+    "cpu_duration": 5,
+    "frame_duration": 5,
+    "cold_start": true
+  }
+}

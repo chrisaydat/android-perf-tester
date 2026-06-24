@@ -14,6 +14,7 @@ from typing import Dict, Optional
 from src.adb_commands import ADBCommands
 from src.data_collector import PerformanceCollector
 from src.data_processor import PerformanceDataProcessor, compare_performance_results
+from src.report_generator import generate_report, generate_report_from_console
 
 
 class AndroidPerformanceTester:
@@ -222,6 +223,10 @@ Examples:
     parser.add_argument("--compare", nargs="+", help="Compare with previous results (JSON files)")
     parser.add_argument("--history", action="store_true", help="Show performance history")
     
+    # Report options
+    parser.add_argument("--report", action="store_true", help="Generate HTML report")
+    parser.add_argument("--report-dir", default="reports", help="Report output directory")
+    
     args = parser.parse_args()
     
     try:
@@ -321,6 +326,17 @@ Examples:
         # Run performance test
         tester = AndroidPerformanceTester(package_name, args.output)
         results = tester.run_full_test(config)
+        
+        # Generate HTML report if requested
+        if args.report:
+            # Get the latest raw and analysis files
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            raw_file = os.path.join(args.output, f"{package_name}_raw_{timestamp}.json")
+            analysis_file = os.path.join(args.output, f"{package_name}_analysis_{timestamp}.json")
+            
+            # Generate the report
+            report_path = generate_report(raw_file, analysis_file, args.report_dir)
+            print(f"\n📊 HTML Report generated: {report_path}")
         
         # Show history if requested
         if args.history:
